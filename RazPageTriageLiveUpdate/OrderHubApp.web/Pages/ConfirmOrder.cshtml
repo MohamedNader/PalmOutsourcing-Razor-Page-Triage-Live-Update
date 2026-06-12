@@ -1,0 +1,52 @@
+﻿@page 
+@model OrderHubApp.web.Pages.ConfirmOrderModel
+
+@{
+    ViewData["Title"] = "Confirm Order";
+}
+
+<h1>Order for @Model.SchoolName</h1>
+
+<form method="post" id="orderForm">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="SchoolName" />
+
+    <div class="order-lines">
+        @for (int i = 0; i < Model.Lines.Count; i++)
+        {
+            <div class="order-line-row"
+                 data-line-id="@Model.Lines[i].Id"
+                 data-unit-price="@Model.Lines[i].UnitPrice"
+                 style="margin-bottom: 10px; display: flex; gap: 15px; align-items: center;">
+
+                <input type="hidden" asp-for="Lines[i].Id" />
+                <input type="hidden" asp-for="Lines[i].Sku" />
+                <input type="hidden" asp-for="Lines[i].Embroidery" />
+                <input type="hidden" asp-for="Lines[i].UnitPrice" />
+
+                <span class="line-desc">@Model.Lines[i].Sku — @Model.Lines[i].Embroidery</span>
+
+                <input type="number"
+                       asp-for="Lines[i].Quantity"
+                       class="line-qty-input"
+                       min="0"
+                       aria-label="Quantity for @Model.Lines[i].Sku"
+                       data-line-id="@Model.Lines[i].Id"
+                       style="width: 60px;" />
+
+                <span class="line-total" aria-live="polite">£@((Model.Lines[i].UnitPrice * Model.Lines[i].Quantity).ToString("F2"))</span>
+            </div>
+        }
+    </div>
+
+    <div style="font-size:18px; color:#333; margin-top: 15px; font-weight: bold;">
+        Subtotal: <span id="orderSubtotal">£@Model.Subtotal.ToString("F2")</span>
+    </div>
+
+    <button type="submit" style="margin-top: 15px;">Confirm Order</button>
+</form>
+
+@section Scripts {
+    <script src="~/js/httpcall.js" asp-append-version="true"></script>
+    <script src="~/js/order-triage.js" asp-append-version="true"></script>
+}
